@@ -4,14 +4,16 @@
 
 The NewTicketLikeThisPlugin adds a "Clone" button to existing tickets,
 which lets you create a new ticket whose fields derive from the original
-ticket if you have the TICKET_ADMIN permission.
+ticket if you have the appropriate permission.
 
 It is based on the tracopt.ticket.clone.ticketclonebutton extension that
 ships with Trac core.  Unlike that extension, the NewTicketLikeThisPlugin
 defines and consumes a pluggable interface for implementing custom policies
 to determine the way in which a new ticket is derived from the original.
 This allows flexible, customized business logic to be provided based on
-the needs and workflows of your team.
+the needs and workflows of your team.  Also, the NewTicketLikeThisPlugin
+allows you to configure the permission required to clone a ticket, whereas
+the core ``ticketclonebutton`` hard-codes the TICKET_ADMIN permission.
 
 Two policies are provided by default, in the ``newticketlikethis.policies`` 
 module:
@@ -43,6 +45,9 @@ newticketlikethis.* = enabled
 
 By default this will add the "Clone" button to the ticket view, and 
 will use the ``SimpleTicketCloner`` component to clone your tickets.
+The ``TICKET_ADMIN`` permission will be required for cloning tickets.
+
+=== Choosing a policy ===
 
 To use a different ticket-cloning policy, make sure to enable any
 necessary components and then set the ``newticketlikethis.ticket_cloner``
@@ -52,6 +57,18 @@ option in ``trac.ini`` to reference the component's name like so:
 [newticketlikethis]
 ticket_cloner = ExcludedFieldsTicketCloner
 }}}
+
+=== Configuring permissions ===
+
+By default the "Clone" button only appears if the user has the 
+``TICKET_ADMIN`` permission.  You can change the required permission
+using the ``newticketlikethis.ticket_clone_permission`` option:
+
+{{{
+[newticketlikethis]
+ticket_clone_permission = TICKET_CREATE
+}}}
+
 
 === ExcludedFieldsTicketCloner ===
 

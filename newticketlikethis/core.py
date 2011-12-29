@@ -7,7 +7,7 @@ http://trac.edgewall.org
 from genshi.builder import tag
 from genshi.filters import Transformer
 
-from trac.config import ExtensionOption
+from trac.config import ExtensionOption, Option
 from trac.core import Component, Interface, implements
 from trac.web.api import ITemplateStreamFilter
 from trac.util.translation import _
@@ -22,13 +22,16 @@ class NewTicketLikeThisPlugin(Component):
                                     ITicketCloner,
                                     'SimpleTicketCloner',
                                     """Name of the component implementing `ITicketCloner`, which provides the logic for building a new ticket from an existing one.""")
+    ticket_clone_permission = Option('newticketlikethis', 'ticket_clone_permission', 'TICKET_ADMIN',
+                                     """The permission required for the "Clone" button to appear on the ticket detail page""")
+
     # ITemplateStreamFilter methods
 
     def filter_stream(self, req, method, filename, stream, data):
         if filename == 'ticket.html':
             ticket = data.get('ticket')
             if ticket and ticket.exists and \
-                    'TICKET_ADMIN' in req.perm(ticket.resource):
+                    self.ticket_clone_permission in req.perm(ticket.resource):
                 filter = Transformer('//h3[@id="comment:description"]')
                 stream |= filter.after(self._clone_form(req, ticket, data))
         return stream
