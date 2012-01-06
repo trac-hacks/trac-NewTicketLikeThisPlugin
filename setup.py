@@ -7,7 +7,7 @@ try:
 except:
     long_description = ''
 
-setup(name='NewTicketLikeThisPlugin',
+setup(name='trac-NewTicketLikeThisPlugin',
       version=version,
       description="Pluggable framework for 'cloning' Trac tickets according to custom business logic",
       long_description=long_description,

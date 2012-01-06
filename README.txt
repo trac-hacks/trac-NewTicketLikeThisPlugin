@@ -1,6 +1,8 @@
-= Create new tickets based on existing tickets =
+Create new tickets based on existing tickets
+============================================
 
-== Description ==
+Description
+-----------
 
 The NewTicketLikeThisPlugin adds a "Clone" button to existing tickets,
 which lets you create a new ticket whose fields derive from the original
@@ -33,58 +35,59 @@ More complex policies might implement custom logic for deriving new ticket
 values based on the values of the existing ticket's fields, or use
 alternate cloning policies based on the ticket's type.
 
-== Configuration ==
+Configuration
+-------------
 
 To use the plugin, install it in your Trac environment and enable its 
-components in ``trac.ini``:
+components in ``trac.ini``::
 
-{{{ 
-[components]
-newticketlikethis.* = enabled
-}}}
+  [components]
+  newticketlikethis.* = enabled
+
 
 By default this will add the "Clone" button to the ticket view, and 
 will use the ``SimpleTicketCloner`` component to clone your tickets.
 The ``TICKET_ADMIN`` permission will be required for cloning tickets.
 
-=== Choosing a policy ===
+Choosing a policy
+~~~~~~~~~~~~~~~~~
 
 To use a different ticket-cloning policy, make sure to enable any
 necessary components and then set the ``newticketlikethis.ticket_cloner``
-option in ``trac.ini`` to reference the component's name like so:
+option in ``trac.ini`` to reference the component's name like so::
 
-{{{
-[newticketlikethis]
-ticket_cloner = ExcludedFieldsTicketCloner
-}}}
+  [newticketlikethis]
+  ticket_cloner = ExcludedFieldsTicketCloner
 
-=== Configuring permissions ===
+
+Configuring permissions
+~~~~~~~~~~~~~~~~~~~~~~~
 
 By default the "Clone" button only appears if the user has the 
 ``TICKET_ADMIN`` permission.  You can change the required permission
-using the ``newticketlikethis.ticket_clone_permission`` option:
+using the ``newticketlikethis.ticket_clone_permission`` option::
 
-{{{
-[newticketlikethis]
-ticket_clone_permission = TICKET_CREATE
-}}}
+  [newticketlikethis]
+  ticket_clone_permission = TICKET_CREATE
 
 
-=== ExcludedFieldsTicketCloner ===
+
+ExcludedFieldsTicketCloner
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If enabled, the ``ExcludedFieldsTicketCloner`` will look for an additional
 configuration option ``newticketlikethis.excluded_fields`` to determine
 which fields to exclude.  This should be a comma-separated list of ticket
 fields.  By default, no fields are excluded. For example, you might use
-a ``trac.ini`` configuration like:
+a ``trac.ini`` configuration like::
 
-{{{
-[newticketlikethis]
-ticket_cloner = ExcludedFieldsTicketCloner
-excluded_fields = description, summary, reporter
-}}}
+  [newticketlikethis]
+  ticket_cloner = ExcludedFieldsTicketCloner
+  excluded_fields = description, summary, reporter
 
-== Customization ==
+
+Customization
+-------------
 
 It is easy to implement your own custom policies as well.  Look at 
 the code in ``newticketlikethis.policies`` for inspiration.
