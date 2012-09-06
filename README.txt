@@ -44,7 +44,6 @@ components in ``trac.ini``::
   [components]
   newticketlikethis.* = enabled
 
-
 By default this will add the "Clone" button to the ticket view, and 
 will use the ``SimpleTicketCloner`` component to clone your tickets.
 The ``TICKET_ADMIN`` permission will be required for cloning tickets.
@@ -58,6 +57,20 @@ option in ``trac.ini`` to reference the component's name like so::
 
   [newticketlikethis]
   ticket_cloner = ExcludedFieldsTicketCloner
+
+
+Using an alternate form handler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+By default the "Clone" button will submit a POST request to the current
+Trac environment's /newticket handler.  You can specify an alternate form
+submission (such as a different Trac instance's /newticket handler) with::
+
+  [newticketlikethis]
+  ticket_clone_form_action = http://trac.example.com/main/newticket
+  ticket_clone_form_method = GET
+
+Either or both of these options may be omitted.
 
 
 Configuring permissions

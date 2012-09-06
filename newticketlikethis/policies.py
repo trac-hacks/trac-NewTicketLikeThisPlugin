@@ -14,7 +14,7 @@ class SimpleTicketCloner(Component):
     This mimics the behavior of the core tracopt.ticket.clone module.
     """
     implements(ITicketCloner)
-    
+
     def build_clone_form(self, req, ticket, data):
         fields = {}
         for f in data.get('fields', []):
@@ -54,3 +54,4 @@ class ExcludedFieldsTicketCloner(Component):
             if name not in fields_to_exclude:
                 fields[name] = ticket[name]
         return fields
+
