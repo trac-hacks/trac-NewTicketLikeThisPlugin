@@ -25,11 +25,10 @@ module:
   from the original ticket are cloned, and the "summary" and "description"
   fields are modified to denote the ticket that they were cloned from.
 
-* ``ExcludedFieldsTicketCloner`` clones all fields from the original ticket
-  with no modifications.  It can also ignore certain fields entirely,
-  based on a configuration setting, which will force the new ticket to be
-  generated with the system's default values (or no values) for the fields
-  that were excluded.
+* ``DerivedFieldsTicketCloner`` can ignore certain fields entirely
+  based on a configuration setting; can derive new field values from
+  the old ticket using Genshi templates, also through configuration;
+  and clones all remaining fields from the original ticket verbatim.
 
 More complex policies might implement custom logic for deriving new ticket
 values based on the values of the existing ticket's fields, or use
@@ -85,18 +84,30 @@ using the ``newticketlikethis.ticket_clone_permission`` option::
 
 
 
-ExcludedFieldsTicketCloner
+DerivedFieldsTicketCloner
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If enabled, the ``ExcludedFieldsTicketCloner`` will look for an additional
+If enabled, the ``DerivedFieldsTicketCloner`` will look for an additional
 configuration option ``newticketlikethis.excluded_fields`` to determine
 which fields to exclude.  This should be a comma-separated list of ticket
-fields.  By default, no fields are excluded. For example, you might use
-a ``trac.ini`` configuration like::
+fields.  By default, no fields are excluded. 
+
+It will also look for an option ``newticketlikethis.derived_fields`` to 
+determine how to derive new field values from the existing ticket.  This
+should be a comma-separated list of Genshi templates mapped to new field
+values.
+
+For example, you might use a ``trac.ini`` configuration like::
 
   [newticketlikethis]
-  ticket_cloner = ExcludedFieldsTicketCloner
+  ticket_cloner = DerivedFieldsTicketCloner
   excluded_fields = description, summary, reporter
+  derived_fields = $ticket.reporter->cc, milestone:$ticket.milestone component:$ticket.component->keywords
+
+This would allow you to create cloned tickets with the old ticket's reporter CCed; 
+the old ticket's milestone and component namespaced and set as keywords on the new
+ticket; the new ticket's description, summary and reporter left blank; and all other
+fields from the old ticket transferred verbatim to the new ticket.
 
 
 Customization

@@ -31,55 +31,44 @@ class SimpleTicketCloner(Component):
                 fields[name] = ticket[name]
         return fields
 
-class ExcludedFieldsTicketCloner(Component):
+class DerivedFieldsTicketCloner(Component):
     """
-    An ITicketCloner implementation that will exclude certain fields
-    from the original ticket when building a clone.  
+    An ITicketCloner implementation that allows you to exclude certain 
+    fields from the original ticket when building a clone, and derive
+    other fields from the original ticket using Genshi templates.
 
-    The list of fields to exclude can be configured with in trac.ini
-    with the ``[newticketlikethis] excluded_fields`` option.
+    The list of fields to exclude and to derive can be configured with::
 
-    By default, no fields are excluded.
+    [newticketlikethis]
+    excluded_fields = description, component, reporter, owner
+    derived_fields = hardcoded string->summary, $ticket.id->original_ticket_id, $ticket.component $ticket.reporter->keywords, $ticket.reporter $ticket.owner->cc
+
+    By default, no fields are excluded, and no fields are derived; 
+    all fields are copied verbatim.
+
+    If a field is specified in both excluded_fields and derived_fields,
+    the excluded_fields configuration takes precedence.
     """
 
     implements(ITicketCloner)
     
     excluded_fields = ListOption('newticketlikethis', 'excluded_fields')
-
-    def build_clone_form(self, req, ticket, data):
-        fields_to_exclude = self.excluded_fields or []
-
-        fields = {}
-        for f in data.get('fields', []):
-            name = f['name']
-            if name not in fields_to_exclude:
-                fields[name] = ticket[name]
-        return fields
-
-class DerivedFieldsTicketCloner(Component):
-    """
-    An ITicketCloner implementation that lets users specify a derivation
-    of new fields from the values of the original ticket's fields.
-
-    Derivations are specified in configuration like so::
-
-    [newticketlikethis]
-    derived_fields = $ticket.id->original_ticket_id, $ticket.component $ticket.reporter->keywords
-    """
-
-    implements(ITicketCloner)
-
     derived_fields = ListOption('newticketlikethis', 'derived_fields')
 
     def build_clone_form(self, req, ticket, data):
         fields = {}
         for derivation in self.derived_fields:
             template, new_field = derivation.split('->')
+            if new_field in self.excluded_fields:
+                continue
             template = NewTextTemplate(template.encode('utf8'))
             fields[new_field] = template.generate(ticket=ticket).render('text', encoding=None).strip()
+
         for f in data.get('fields', []):
             name = f['name']
             if name in fields:
                 continue
-            fields[name] = ticket[name]
+            if name not in self.excluded_fields:
+                fields[name] = ticket[name]
         return fields
+
