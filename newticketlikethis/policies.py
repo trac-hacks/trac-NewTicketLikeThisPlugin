@@ -61,7 +61,7 @@ class DerivedFieldsTicketCloner(Component):
             template, new_field = derivation.split('->')
             if new_field in self.excluded_fields:
                 continue
-            template = NewTextTemplate(template.encode('utf8'))
+            template = NewTextTemplate(template.replace("\\n", "\n").encode('utf8'))
             fields[new_field] = template.generate(ticket=ticket).render('text', encoding=None).strip()
 
         for f in data.get('fields', []):
